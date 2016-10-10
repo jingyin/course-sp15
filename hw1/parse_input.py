@@ -10,11 +10,12 @@ import re
 
 class CsvField(object):
     def __init__(self):
-        self.title = None
-        self.author = None
-        self.release_date = None
-        self.ebook_id = None
-        self.language = None
+        null = 'null'
+        self.title = null
+        self.author = null
+        self.release_date = null
+        self.ebook_id = null
+        self.language = null
         self.body_list = []
 
 
@@ -43,13 +44,13 @@ def main():
                     csv_field.release_date,
                     csv_field.ebook_id,
                     csv_field.language,
-                    ''.join(csv_field.body_list)
+                    ''.join(csv_field.body_list),
                 ])
                 csv_field = CsvField()
             else:
                 csv_field.body_list.append(line)
-                for token in re.findall('\w+', line):
-                    sys.stderr.write("{},{}\n".format(csv_field.ebook_id, token.lower()))
+                for token in re.findall('[a-zA-Z]+', line):
+                    sys.stderr.write("{},{}\r\n".format(csv_field.ebook_id, token.lower()))
         else:
             if line.startswith('*** START OF THE PROJECT GUTENBERG EBOOK'):
                 read_body = True

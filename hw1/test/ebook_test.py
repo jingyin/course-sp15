@@ -9,6 +9,9 @@ class TestEbook(unittest.TestCase):
     # ensure sane sort orders from UNIX sort
     os.environ["LC_ALL"] = "C"
 
+  def test_sample(self):
+    self.diff_files("ebooks_sample.txt")
+
   def test_sanity(self):
     self.diff_files("ebooks_tiny.txt")
 
