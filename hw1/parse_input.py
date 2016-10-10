@@ -19,10 +19,10 @@ class CsvField(object):
 
 
 matchers = [
-    (r'Title: (.*)', 'title'),
-    (r'Author: (.*)', 'author'),
+    (r'Title: (.*)\b', 'title'),
+    (r'Author: (.*)\b', 'author'),
     (r'Release Date: (.*) \[EBook #(\d+)\]', ['release_date', 'ebook_id']),
-    (r'Language: (.*)', 'language'),
+    (r'Language: (.*)\b', 'language'),
 ]
 
 
@@ -45,6 +45,7 @@ def main():
                     csv_field.language,
                     ''.join(csv_field.body_list)
                 ])
+                csv_field = CsvField()
             else:
                 csv_field.body_list.append(line)
                 for token in re.findall('\w+', line):
