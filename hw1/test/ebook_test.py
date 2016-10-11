@@ -33,19 +33,25 @@ class TestEbook(unittest.TestCase):
     # uncap virtual memory usage  
     resource.setrlimit(rsrc, (soft, hard))
 
-    for fname in ['ebook', 'tokens', 'token_counts', 'name_counts']:
-      try: 
-        subprocess.check_call("sort " + fname + ".csv > " + fname + "-sorted.csv", shell=True) 
+    files_to_check = ['ebook', 'tokens', 'token_counts', 'name_counts']
+
+    for fname in files_to_check:
+      try:
+        subprocess.check_call("sort " + fname + ".csv > " + fname + "-sorted.csv", shell=True)
       except subprocess.CalledProcessError:
         self.fail("Sorting " + fname + ".csv failed.")
-      # compare each of the resulting csv files with reference versions
-      self.assertEqual(filecmp.cmp(fname + "-sorted.csv", "test/"+ subpath + ".out/" +fname+ "-sorted.csv"), True,
-                       fname + "-sorted.csv did not match sorted reference file.") 
 
-      try: 
-        subprocess.check_call("rm " + fname + "-sorted.csv", shell=True) 
+    fname_matched =[(fname, filecmp.cmp(fname + "-sorted.csv", "test/"+ subpath + ".out/" +fname+ "-sorted.csv")) for fname in files_to_check]
+    for fname, matched in fname_matched:
+      print fname, 'matched output:', matched
+    for fname, matched in fname_matched:
+      self.assertEqual(matched, True, fname + "-sorted.csv did not match sorted reference file.")
+
+      try:
+        subprocess.check_call("rm " + fname + "-sorted.csv", shell=True)
       except subprocess.CalledProcessError:
         self.fail("Removing " + fname + "-sorted.csv failed.")
+
 
 if __name__ == '__main__':
     unittest.main()
