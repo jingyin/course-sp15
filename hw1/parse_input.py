@@ -35,7 +35,7 @@ def process_file(file_path):
     with open(file_path, 'r') as f:
         for line in f:
             if read_body:
-                if line.startswith('*** END OF THE PROJECT GUTENBERG EBOOK'):
+                if line.startswith('*** END OF THE PROJECT GUTENBERG'):
                     read_body = False
                     csv_writer.writerow([
                         csv_field.title,
@@ -53,7 +53,7 @@ def process_file(file_path):
                     csv_field.body_list.append(line)
                     csv_field.token_list.extend(re.findall('[a-zA-Z]+', line))
             else:
-                if line.startswith('*** START OF THE PROJECT GUTENBERG EBOOK'):
+                if line.startswith('*** START OF THE PROJECT GUTENBERG'):
                     read_body = True
                 elif line.startswith(title_prefix):
                     csv_field.title = line[len(title_prefix):].strip()
