@@ -139,11 +139,8 @@ private[sql] class DiskPartition
       private[this] def fetchNextChunk(): Boolean = {
         if (chunkSizeIterator.hasNext) {
           val chunkSize = chunkSizeIterator.next
-          byteArray = new Array[Byte](chunkSize)
-          inStream.read(byteArray)
+          byteArray = CS186Utils.getNextChunkBytes(inStream, chunkSize, byteArray)
           currentIterator = CS186Utils.getListFromBytes(byteArray).iterator.asScala
-          // free buffer explicitly
-          byteArray = null
           true
         } else {
           false
