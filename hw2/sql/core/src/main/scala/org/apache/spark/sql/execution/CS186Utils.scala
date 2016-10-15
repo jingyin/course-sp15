@@ -104,9 +104,15 @@ object CS186Utils {
    * @param expressions
    * @return
    */
-  def getUdfFromExpressions(expressions: Seq[Expression]): ScalaUdf = {
-    // IMPLEMENT ME
-    null
+  def getUdfFromExpressions(expressions: Seq[Expression]): ScalaUdf = expressions.flatMap(expression => getUdfFromExpression(expression)).lastOption.orNull
+
+  def getUdfFromExpression(expression: Expression): Option[ScalaUdf] = {
+    expression match {
+      case udf: ScalaUdf =>
+        Some(udf)
+      case _ =>
+        None
+    }
   }
 
   /**
