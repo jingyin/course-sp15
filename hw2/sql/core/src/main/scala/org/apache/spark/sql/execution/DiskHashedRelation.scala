@@ -36,18 +36,19 @@ protected [sql] final class GeneralDiskHashedRelation(partitions: Array[DiskPart
     extends DiskHashedRelation with Serializable {
 
   override def getIterator() = {
-    // IMPLEMENT ME
-    null
+    refArrayOps(partitions).toIterator
   }
 
   override def closeAllPartitions() = {
-    // IMPLEMENT ME
+    partitions foreach (partition => partition.closePartition())
   }
 }
 
-private[sql] class DiskPartition (
-                                  filename: String,
-                                  blockSize: Int) {
+private[sql] class DiskPartition
+(
+  filename: String,
+  blockSize: Int
+) {
   private val path: Path = Files.createTempFile("", filename)
   private val data: JavaArrayList[Row] = new JavaArrayList[Row]
   private val outStream: OutputStream = Files.newOutputStream(path)
@@ -168,12 +169,20 @@ private[sql] object DiskHashedRelation {
    * @param blockSize the threshold at which each partition will spill
    * @return the constructed [[DiskHashedRelation]]
    */
-  def apply (
-                input: Iterator[Row],
-                keyGenerator: Projection,
-                size: Int = 64,
-                blockSize: Int = 64000) = {
-    // IMPLEMENT ME
-    null
+  def apply
+  (
+    input: Iterator[Row],
+    keyGenerator: Projection,
+    size: Int = 64,
+    blockSize: Int = 64000
+  ) = {
+    val partitions = Array.tabulate(size)(i => new DiskPartition("disk partition %d".format(i), blockSize))
+    while (input.hasNext) {
+      val row = input.next
+      val partitionId = row.hashCode() % size
+      partitions(partitionId).insert(row)
+    }
+
+    new GeneralDiskHashedRelation(partitions)
   }
 }
