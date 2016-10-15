@@ -178,6 +178,7 @@ private[sql] object DiskHashedRelation {
   ) = {
     val partitions = Array.tabulate(size)(i => new DiskPartition("disk partition %d".format(i), blockSize))
     input.foreach(row => partitions(row.hashCode() % size).insert(row))
+    partitions.foreach(_.closeInput())
 
     new GeneralDiskHashedRelation(partitions)
   }
