@@ -1,6 +1,8 @@
 DROP VIEW IF EXISTS q1a, q1b, q1c, q1d, q2, q3, q4, q5, q6, q7;
 DROP VIEW IF EXISTS obama_committee_contributors;
 DROP VIEW IF EXISTS obama;
+DROP VIEW IF EXISTS candidates_with_committee_contribution;
+DROP VIEW IF EXISTS committee_count;
 
 -- Question 1a
 CREATE VIEW q1a(id, amount)
@@ -76,9 +78,27 @@ AS
 ;
 
 -- Question 4.
+CREATE VIEW committee_count(c)
+AS
+  SELECT COUNT(*)
+  FROM committees
+;
+
+CREATE VIEW candidates_with_committee_contribution(id, c)
+AS
+  SELECT cand_id, COUNT(DISTINCT cmte_id)
+  FROM committee_contributions
+  GROUP BY cand_id
+;
+
 CREATE VIEW q4 (name)
 AS
-  SELECT 1 -- replace this line
+  SELECT c.name
+  FROM candidates_with_committee_contribution ccc
+  JOIN candidates c
+  ON ccc.id = c.id
+  JOIN committee_count cc
+  ON ccc.c > cc.c / 100
 ;
 
 -- Question 5
