@@ -3,6 +3,7 @@ DROP VIEW IF EXISTS obama_committee_contributors;
 DROP VIEW IF EXISTS obama;
 DROP VIEW IF EXISTS candidates_with_committee_contribution;
 DROP VIEW IF EXISTS committee_count;
+DROP VIEW IF EXISTS contributions_from_org;
 
 -- Question 1a
 CREATE VIEW q1a(id, amount)
@@ -102,8 +103,20 @@ AS
 ;
 
 -- Question 5
-CREATE VIEW q5 (name, total_pac_donations) AS
-  SELECT 1,1 -- replace this line
+CREATE VIEW contributions_from_org(id, total)
+AS
+  SELECT cmte_id, SUM(transaction_amt)
+  FROM individual_contributions
+  WHERE entity_tp = 'ORG'
+  GROUP BY cmte_id
+;
+
+CREATE VIEW q5 (name, total_pac_donations)
+AS
+  SELECT c.name, co.total
+  FROM committees c
+  LEFT OUTER JOIN contributions_from_org co
+  ON c.id = co.id
 ;
 
 -- Question 6
