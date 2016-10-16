@@ -194,13 +194,24 @@ object CachingIteratorGenerator {
         val cache: JavaHashMap[Row, Row] = new JavaHashMap[Row, Row]()
 
         def hasNext() = {
-          // IMPLEMENT ME
-          false
+          input.hasNext
         }
 
         def next() = {
-          // IMPLEMENT ME
-          null
+          val row = input.next
+          val preUdfRow = preUdfProjection(row)
+          val postUdfRow = postUdfProjection(row)
+          val cacheKey = cacheKeyProjection(row)
+
+          val udfRow = if (cache.containsKey(cacheKey)) {
+            cache.get(cacheKey)
+          } else {
+            val computedRow = udfProject(cacheKey)
+            cache.put(cacheKey, computedRow)
+            computedRow
+          }
+
+          new JoinedRow(preUdfRow, new JoinedRow(udfRow, postUdfRow)).copy()
         }
       }
     }
