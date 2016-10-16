@@ -11,7 +11,9 @@ AS
 -- Question 1b
 CREATE VIEW q1b(id, name, amount)
 AS
-  SELECT 1,1,1 -- replace this line
+  SELECT cmte_id, name, transaction_amt
+  FROM committee_contributions
+  WHERE transaction_amt > 5000
 ;
 
 -- Question 1c
