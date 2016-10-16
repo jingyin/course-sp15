@@ -35,7 +35,16 @@ AS
 -- Question 2
 CREATE VIEW q2(from_name, to_name)
 AS
-  SELECT 1,1 -- replace this line
+  SELECT c.name AS from_name, c2.name AS to_name
+  FROM intercommittee_transactions AS ic
+  JOIN committees AS c
+  ON ic.other_id = c.id
+  JOIN committees AS c2
+  ON ic.cmte_id = c2.id
+  WHERE c.pty_affiliation = 'DEM' AND c2.pty_affiliation = 'DEM'
+  GROUP BY c.id, c2.id
+  ORDER BY COUNT(*) DESC
+  LIMIT 10
 ;
 
 -- Question 3
