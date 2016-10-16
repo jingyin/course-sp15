@@ -210,6 +210,8 @@ private[sql] object DiskHashedRelation {
     partitions.foreach(_.closeInput())
 
     // filter for non-empty disk partitions
-    new GeneralDiskHashedRelation(partitions)
+    val nonEmptyPartitions = (0 to size).flatMap(i => if (partitionToObjectCount(i) > 0) Some(partitions(i)) else None).toArray
+
+    new GeneralDiskHashedRelation(nonEmptyPartitions)
   }
 }
