@@ -4,6 +4,8 @@ DROP VIEW IF EXISTS obama;
 DROP VIEW IF EXISTS candidates_with_committee_contribution;
 DROP VIEW IF EXISTS committee_count;
 DROP VIEW IF EXISTS contributions_from_org;
+DROP VIEW IF EXISTS ri_common_candidates;
+DROP VIEW IF EXISTS ri_candidates;
 
 -- Question 1a
 CREATE VIEW q1a(id, amount)
@@ -120,7 +122,8 @@ AS
 ;
 
 -- Question 6
-CREATE VIEW q6 (id) AS
+CREATE VIEW q6 (id)
+AS
   SELECT DISTINCT cand_id
   FROM committee_contributions
   WHERE entity_tp = 'PAC' AND cand_id IS NOT NULL
@@ -131,6 +134,28 @@ CREATE VIEW q6 (id) AS
 ;
 
 -- Question 7
-CREATE VIEW q7 (cand_name1, cand_name2) AS
-  SELECT 1,1 -- replace this line
+CREATE VIEW ri_candidates(id, cmte_id)
+AS
+  SELECT cand_id, cmte_id
+  FROM committee_contributions
+  WHERE state = 'RI' AND cand_id IS NOT NULL
+;
+
+CREATE VIEW ri_common_candidates(id, other_id)
+AS
+  SELECT r.id, r2.id
+  FROM ri_candidates r
+  JOIN ri_candidates r2
+  ON r.id <> r2.id AND r.cmte_id = r2.cmte_id
+  GROUP BY r.id, r2.id
+;
+
+CREATE VIEW q7 (cand_name1, cand_name2)
+AS
+  SELECT c.name, c2.name
+  FROM ri_common_candidates r
+  LEFT OUTER JOIN candidates c
+  ON r.id = c.id
+  LEFT OUTER JOIN candidates c2
+  ON r.other_id = c2.id
 ;
