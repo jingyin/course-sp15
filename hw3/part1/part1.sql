@@ -1,4 +1,6 @@
 DROP VIEW IF EXISTS q1a, q1b, q1c, q1d, q2, q3, q4, q5, q6, q7;
+DROP VIEW IF EXISTS obama_committee_contributors;
+DROP VIEW IF EXISTS obama;
 
 -- Question 1a
 CREATE VIEW q1a(id, amount)
@@ -48,9 +50,29 @@ AS
 ;
 
 -- Question 3
+
+CREATE VIEW obama(id)
+AS
+  SELECT id
+  FROM candidates
+  WHERE name = 'OBAMA, BARACK'
+;
+
+
+CREATE VIEW obama_committee_contributors(id)
+AS
+  SELECT DISTINCT cmte_id
+  FROM committee_contributions cc
+  JOIN obama o
+  ON o.id = cc.cand_id
+;
+
 CREATE VIEW q3(name)
 AS
-  SELECT 1 -- replace this line
+  SELECT name
+  FROM (SELECT id FROM committees EXCEPT SELECT id FROM obama_committee_contributors) nc
+  JOIN committees c
+  ON nc.id = c.id
 ;
 
 -- Question 4.
