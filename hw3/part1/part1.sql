@@ -27,7 +27,9 @@ AS
 -- Question 1d
 CREATE VIEW q1d(id, name, avg_amount)
 AS
-  SELECT 1,1,1 -- replace this line
+  SELECT id, name, avg_amount
+  FROM q1c
+  WHERE avg_amount > 10000
 ;
 
 -- Question 2
