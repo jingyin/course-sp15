@@ -121,7 +121,13 @@ AS
 
 -- Question 6
 CREATE VIEW q6 (id) AS
-  SELECT 1 -- replace this line
+  SELECT DISTINCT cand_id
+  FROM committee_contributions
+  WHERE entity_tp = 'PAC' AND cand_id IS NOT NULL
+  INTERSECT
+    (SELECT DISTINCT cand_id
+    FROM committee_contributions
+    WHERE entity_tp = 'CCM' AND cand_id IS NOT NULL)
 ;
 
 -- Question 7
