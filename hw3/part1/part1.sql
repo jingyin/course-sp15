@@ -19,7 +19,9 @@ AS
 -- Question 1c
 CREATE VIEW q1c(id, name, avg_amount)
 AS
-  SELECT 1,1,1 -- replace this line
+  SELECT id, name, AVG(amount)
+  FROM q1b
+  GROUP BY id, name
 ;
 
 -- Question 1d
