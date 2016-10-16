@@ -9,6 +9,7 @@ import org.apache.spark.sql.catalyst.expressions.{Projection, Row}
 import org.apache.spark.sql.execution.CS186Utils._
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 /**
  * This trait represents a regular relation that is hash partitioned and spilled to
@@ -200,7 +201,7 @@ private[sql] object DiskHashedRelation {
     blockSize: Int = 64000
   ) = {
     val partitions = Array.tabulate(size)(i => new DiskPartition("disk partition %d".format(i), blockSize))
-    val partitionToObjectCount = Map[Int, Int]().withDefaultValue(0)
+    val partitionToObjectCount = mutable.Map[Int, Int]().withDefaultValue(0)
     input.foreach(row => {
       val index = row.hashCode() % size
       partitions(index).insert(row)
