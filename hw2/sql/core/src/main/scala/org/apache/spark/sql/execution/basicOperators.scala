@@ -99,16 +99,24 @@ case class PartitionProject(projectList: Seq[Expression], child: SparkPlan) exte
     val keyGenerator = CS186Utils.getNewProjection(projectList, child.output)
 
     // IMPLEMENT ME
+    val diskHashedRelation = DiskHashedRelation.apply(input, keyGenerator)
+    val diskPartitionIterator = diskHashedRelation.getIterator()
+
+    var currentIterator = Iterator[Row]()
 
     new Iterator[Row] {
       def hasNext() = {
         // IMPLEMENT ME
-        false
+        currentIterator.hasNext || diskPartitionIterator.hasNext
       }
 
       def next() = {
         // IMPLEMENT ME
-        null
+        if (currentIterator.hasNext || fetchNextPartition()) {
+          currentIterator.next
+        } else {
+          null
+        }
       }
 
       /**
@@ -119,7 +127,12 @@ case class PartitionProject(projectList: Seq[Expression], child: SparkPlan) exte
        */
       private def fetchNextPartition(): Boolean  = {
         // IMPLEMENT ME
-        false
+        if (diskPartitionIterator.hasNext) {
+          currentIterator = diskPartitionIterator.next.getData()
+          true
+        } else {
+          false
+        }
       }
     }
   }
@@ -368,7 +381,7 @@ case class Except(left: SparkPlan, right: SparkPlan) extends BinaryNode {
 
 /**
  * :: DeveloperApi ::
- * Returns the rows in left that also appear in right using the built in spark
+p * Returns the rows in left that also appear in right using the built in spark
  * intersection function.
  */
 @DeveloperApi

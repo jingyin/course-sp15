@@ -117,9 +117,7 @@ private[sql] class DiskPartition
       var byteArray: Array[Byte] = null
 
       override def next() = {
-        if (currentIterator.hasNext) {
-          currentIterator.next()
-        } else if (fetchNextChunk()) {
+        if (currentIterator.hasNext || fetchNextChunk()) {
           currentIterator.next()
         } else {
           null
@@ -202,9 +200,15 @@ private[sql] object DiskHashedRelation {
     blockSize: Int = 64000
   ) = {
     val partitions = Array.tabulate(size)(i => new DiskPartition("disk partition %d".format(i), blockSize))
-    input.foreach(row => partitions(row.hashCode() % size).insert(row))
+    val partitionToObjectCount = Map[Int, Int]().withDefaultValue(0)
+    input.foreach(row => {
+      val index = row.hashCode() % size
+      partitions(index).insert(row)
+      partitionToObjectCount(index) += 1
+    })
     partitions.foreach(_.closeInput())
 
+    // filter for non-empty disk partitions
     new GeneralDiskHashedRelation(partitions)
   }
 }
