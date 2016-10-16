@@ -3,7 +3,9 @@ DROP VIEW IF EXISTS q1a, q1b, q1c, q1d, q2, q3, q4, q5, q6, q7;
 -- Question 1a
 CREATE VIEW q1a(id, amount)
 AS
-  SELECT 1,1 -- replace this line
+  SELECT cmte_id, transaction_amt
+  FROM committee_contributions
+  WHERE transaction_amt > 5000
 ;
 
 -- Question 1b
