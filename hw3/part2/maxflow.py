@@ -135,12 +135,15 @@ def maxflow(bfs_max_iterations=float('inf'), flow_max_iterations=float('inf')):
         # Then, update the `edges` table
         db.execute("""
             WITH updates(id, new_capacity) AS (
-                ???
+                SELECT fr.edge_id As id, e.capacity - fr.flow AS new_capacity
+                FROM flow_to_route AS fr
+                JOIN edge AS e
+                ON fr.edge_id = e.id
             )
             UPDATE edge
-              SET ???
+              SET capacity = updates.new_capacity
               FROM updates
-              WHERE ???;
+              WHERE edge.id = updates.id;
             """)
 
         # DO NOT EDIT
