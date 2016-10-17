@@ -122,7 +122,10 @@ def maxflow(bfs_max_iterations=float('inf'), flow_max_iterations=float('inf')):
                 SELECT unnest(path) AS path_edge FROM chosen_route
             ),
             constraining_capacity(capacity) AS (
-                ???
+                SELECT MIN(e.capacity)
+                FROM path_edges pe
+                JOIN edge e
+                ON pe.path_edge = e.id
             )
             SELECT path_edge AS edge_id, (SELECT * FROM constraining_capacity) as flow 
             INTO flow_to_route FROM path_edges;
