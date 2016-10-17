@@ -86,7 +86,7 @@ def maxflow(bfs_max_iterations=float('inf'), flow_max_iterations=float('inf')):
                     FROM paths AS p
                     JOIN edge AS e
                     ON p.nodes[array_length(p.nodes, 1)] = e.src
-                    WHERE e.capacity != 0
+                    WHERE e.capacity != 0 AND NOT p.nodes @> ARRAY[e.dst]
                     ;
 
                     DROP TABLE IF EXISTS paths CASCADE;
